@@ -1,16 +1,17 @@
 package com.PhotoFilters.Filters;
 
-import com.PhotoFilters.Applicable;
-
 import java.awt.*;
 
 //08.10 doesn`t work properly
-public class Dithering implements Applicable {
+//https://www.youtube.com/watch?v=0L2n8Tg2FwI
+public class Dithering implements Filter {
     final int factor = 4;
-
     @Override
     public void apply(Color[][] pixelArray) {
-        applyGreyScale(pixelArray);
+        //applyGreyScale(pixelArray);
+        GreyScale greyScale = new GreyScale();
+        greyScale.apply(pixelArray);
+
         int width = pixelArray.length;
         int height = pixelArray[0].length;
         for (int y = 0; y < height - 1; y++) {
@@ -78,18 +79,18 @@ public class Dithering implements Applicable {
         else pixelArray[x][y] = new Color((int) r, (int) g, (int) b);
     }
 
-    private void applyGreyScale(Color[][] pixelArray) {
-        int width = pixelArray.length;
-        int height = pixelArray[0].length;
-
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
-                int red = pixelArray[i][j].getRed();
-                int green = pixelArray[i][j].getGreen();
-                int blue = pixelArray[i][j].getBlue();
-                int avg = (red + green + blue) / 3;
-                pixelArray[i][j] = new Color(avg, avg, avg);
-            }
-        }
-    }
+//    private void applyGreyScale(Color[][] pixelArray) {
+//        int width = pixelArray.length;
+//        int height = pixelArray[0].length;
+//
+//        for (int i = 0; i < width; i++) {
+//            for (int j = 0; j < height; j++) {
+//                int red = pixelArray[i][j].getRed();
+//                int green = pixelArray[i][j].getGreen();
+//                int blue = pixelArray[i][j].getBlue();
+//                int avg = (red + green + blue) / 3;
+//                pixelArray[i][j] = new Color(avg, avg, avg);
+//            }
+//        }
+//    }
 }

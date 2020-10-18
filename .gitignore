@@ -2,6 +2,8 @@
 .gradle
 
 assets/*
-output.jpg
+*.jpg
+*.png
+*.html
 # Ignore Gradle build output directory
 build

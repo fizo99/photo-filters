@@ -1,5 +1,8 @@
 package com.PhotoFilters;
 
+import com.PhotoFilters.Filters.Filter;
+import com.PhotoFilters.Scaling.Scaler;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -9,49 +12,70 @@ import java.io.IOException;
 public class Image {
     private BufferedImage myPicture = null;
     private Color[][] PixelArray = null;
+    private String format = null;
 
     Image(String path) throws IOException {
         File file = new File(path);
+        format = readFileFormat(file.getName());
         myPicture = ImageIO.read(file);
+        PixelArray = loadPixels(myPicture);
     }
 
-    public int getHeight() {
-        return myPicture.getHeight();
-    }
-
-    public int getWidth() {
-        return myPicture.getWidth();
-    }
-
-    public void loadPixels() {
-        if (PixelArray != null) return;
-        else {
-            int height = myPicture.getHeight();
-            int width = myPicture.getWidth();
-            PixelArray = new Color[width][height];
-            for (int i = 0; i < width; i++) {
-                for (int j = 0; j < height; j++) {
-                    PixelArray[i][j] = new Color(myPicture.getRGB(i, j));
-                }
+    public Color[][] loadPixels(BufferedImage im) {
+        int height = im.getHeight();
+        int width = im.getWidth();
+        Color[][] pxArr = new Color[width][height];
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                pxArr[x][y] = new Color(im.getRGB(x, y));
             }
         }
+        return pxArr;
+    }
+    public Color[][] getPixels() {
+        return this.PixelArray;
+    }
+    public void setPixels(Color[][] pxArr) {
+        this.PixelArray = pxArr;
     }
 
-    public void applyFilter(Applicable filter) throws IOException {
-        filter.apply(PixelArray);
+    public void filter(Filter filter) throws IOException {
+        filter.apply(this.PixelArray);
+    }
+    public void scale(Scaler scaler, float factor){
+        setPixels(scaler.scale(this.PixelArray,factor));
     }
 
-    public void save() throws IOException {
-        BufferedImage output = new BufferedImage(PixelArray.length, PixelArray[0].length,
+    public void save(String name, Color[][] pxArr) {
+        int width = pxArr.length;
+        int height = pxArr[0].length;
+
+        BufferedImage output = new BufferedImage(width, height,
                 BufferedImage.TYPE_INT_RGB);
 
-        for (int x = 0; x < PixelArray.length; x++) {
-            for (int y = 0; y < PixelArray[x].length; y++) {
-                output.setRGB(x, y, PixelArray[x][y].getRGB());
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                output.setRGB(x, y, pxArr[x][y].getRGB());
             }
         }
-
-        File outputfile = new File("output.jpg");
-        ImageIO.write(output, "jpg", outputfile);
+//
+        try {
+            File outputFile = new File(name+format);
+            boolean test = ImageIO.write(output, format.substring(1), outputFile);
+            if(test == true) System.out.println("Image saved as: " + name + format);
+            else System.out.println("Error occured while saving file");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    private String readFileFormat(String fileName){
+        StringBuilder s = new StringBuilder();
+        boolean formatBegin = false;
+        for(char c: fileName.toCharArray()){
+            if(c == '.') formatBegin = true;
+            if(formatBegin == false) continue;
+            s.append(c);
+        }
+        return s.toString();
     }
 }

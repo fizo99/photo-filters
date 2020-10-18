@@ -1,7 +1,7 @@
-package com.PhotoFilters;
+package com.PhotoFilters.Filters;
 
 import java.awt.*;
 
-public interface Applicable {
+public interface Filter {
     void apply(Color[][] pixelArray);
 }
